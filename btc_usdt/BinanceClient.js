@@ -1,16 +1,16 @@
 const WebSocketClient = require('websocket').client;
+const OrderBookManager = require ('./managers/OrderBookManager.js').OrderBookManager;
 const ClientHandlers = require("./utils/ClientHandlers.js").ClientHandler;
-const HttpsClient = require ('./utils/HttpsClient.js').HttpsClient;
 const ConstantsBundle = require('./utils/constants.js')
 
 class BinanceClient
 {
     constructor(endpoint)
     {
-        this.clientHandler = new ClientHandlers(this);
+        this.orderBookManager = new OrderBookManager();
+        this.clientHandler = new ClientHandlers(this.orderBookManager);
         this.clientSocket = new WebSocketClient();
         this.endpoint = endpoint;
-        this.httpsClient = new HttpsClient();
         this.initClientSocket();
     }
     initClientSocket()
@@ -26,17 +26,7 @@ class BinanceClient
     connect()
     {
         this.clientSocket.connect(this.endpoint);
-        this.depthSnapshot = this.httpsClient.fetch(ConstantsBundle.URL_SNAPSHOT);
-
     }
-    onMessage(msg)
-    {
-        const payload = JSON.parse(msg.utf8Data);
-        console.log("SYMBOL : ", payload.s);
-        console.log("BID : ", payload.b);
-        console.log("ASK : ", payload.a);
-    }
-
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
-class ClientHandler {
-constructor(cbk) {this.cbkClass = cbk}
+ class ClientHandler {
+constructor(cbk) {this.cbkHandlerClass = cbk}
 onConnectFailed(error) 
 {
     console.log('Connect Error: ' + error.toString());
@@ -20,12 +20,17 @@ onConnectionClosed()
     console.log('Connection Closed');   
 }
 
-onMessage(msg)
+onMessage(msg) 
 {
-    this.cbkClass.onMessage(msg)
+    this.cbkHandlerClass.handle(msg) 
 }
-};
 
+onData(d) 
+{
+    this.onMessage(d);
+}
+
+};
 
 module.exports = 
 {

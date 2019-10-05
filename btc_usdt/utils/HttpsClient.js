@@ -3,24 +3,28 @@ const ClientHandlers = require('./ClientHandlers.js').ClientHandler;
 
 class HttpsClient
 {
-	constructor() 
+	constructor(url, updateCbk) 
 	{
 		this.clientHandlers = new ClientHandlers(this);
+        this.url = url;
+        this.updateCbk = updateCbk;
+        this.buffer=[]
+        this.fetchFromClient();
 	}
-	readToBuffer(url)
+	fetchFromClient()
 	{
-		https.get(url, (res) => {
-		  res.on('data', (d) => { this.clientHandlers.onMessage(d); }); 
+		https.get(this.url, (res) => {
+		  res.on('data', (d) => { this.clientHandlers.onData(d); }); 
+          res.on('end', ()=>{this.updateCbk.update(JSON.parse(this.buffer));})
         }).on('error', (e) => { this.clientHandlers.onError(e); });
 	}
-    fetch(url)
-    {
-        this.readToBuffer(url);
-        return this.buffer;  // TO DO: Fill up buffer
-    }
-	onMessage(msg)
+	handle(msg)
 	{
-        this.buffer = msg;
+        if (msg == 'undefined')
+        {
+            return;
+        }
+        this.buffer += msg;
 	}
 };
 
