@@ -1,5 +1,5 @@
 class ClientHandler {
-constructor() {}
+constructor(cbk) {this.cbkClass = cbk}
 onConnectFailed(error) 
 {
     console.log('Connect Error: ' + error.toString());
@@ -10,9 +10,9 @@ onConnect()
     console.log('Connected to Binance stream');
 }
 
-onConnectionError(err)
+onError(err)
 {
-    console.log('Connection Error', err.toString());
+    console.log('Error: ', err.toString());
 }
 
 onConnectionClosed()
@@ -20,12 +20,9 @@ onConnectionClosed()
     console.log('Connection Closed');   
 }
 
-filter(msg)
+onMessage(msg)
 {
-    const payload = JSON.parse(msg.utf8Data);
-    console.log("SYMBOL : ", payload.s);
-    console.log("BID : ", payload.b);
-    console.log("ASK : ", payload.a);
+    this.cbkClass.onMessage(msg)
 }
 };
 

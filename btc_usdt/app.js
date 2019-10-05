@@ -1,5 +1,5 @@
 const BinanceClient = require('./BinanceClient.js').BinanceClient;
+const ConstantsBundle = require('./utils/constants.js');
 
-
-const client = new BinanceClient('wss://stream.binance.com:9443/ws/btcusdt@depth@100ms')
+const client = new BinanceClient(ConstantsBundle.URL_STREAM)
 client.connect() 
