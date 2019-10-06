@@ -27,6 +27,23 @@ class BinanceClient
     {
         this.clientSocket.connect(this.endpoint);
     }
+    getPrice(side, quantity)
+    {
+        if(side == 'buy' )
+        {
+            if (quantity <= this.orderBookManager.orderBook.bidQuantity)
+                {console.log("getBidList", quantity);}
+        }
+        else if(side == 'sell')
+        {
+            if (quantity <= this.orderBookManager.orderBook.bidQuantity)
+                {console.log("getBidList", quantity);}
+        }
+        else
+        {
+            console.log("ERROR unsuported side", side)
+        }
+    }
 }
 
 module.exports = {
