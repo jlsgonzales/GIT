@@ -39,8 +39,21 @@ class OrderBookManager
             {
                 return;   
             }
-            this.orderBook.bids.push(bid)
-            this.orderBook.bids.sort((b1, b2)=>{return b2[0] - b1[0];});
+            var index = this.orderBook.bids.findIndex((bidListItem)=> {
+                return bidListItem[0] == bid[0];
+            })
+            if (index == -1)
+            {
+                var parsedBidEntry = [parseFloat(bid[0]), parseFloat(bid[1])];
+                this.orderBook.bids.push(parsedBidEntry); //NEW ENTRY
+                this.orderBook.bids.sort((b1, b2)=>{return b2[0] - b1[0];});
+            }
+            else
+            {
+                var parsedQuantiy = parseFloat(bid[1]);
+                this.orderBook.bids[index][1] += parsedQuantiy; // OLD ENTRY ADD QUANTITY
+            }
+
         }
     }
     updateAskList(data)
@@ -51,9 +64,22 @@ class OrderBookManager
             {
                 return;   
             }
-            this.orderBook.asks.push(ask)
-            this.orderBook.asks.sort((a1,a2)=>{return a1[0] - a2[0];});
+            var index = this.orderBook.asks.findIndex((askListItem) => {
+                return askListItem[0] == ask[0];
+            })
+            if (index == -1)
+            {
+                var parsedAskEntry = [parseFloat(ask[0]), parseFloat(ask[1])];
+                this.orderBook.asks.push(parsedAskEntry) //NEW ENTRY
+                this.orderBook.asks.sort((a1,a2)=>{return a1[0] - a2[0];});
+            }
+            else
+            {
+                var parsedQuantiy = parseFloat(ask[1]);
+                this.orderBook.asks[index][1] += parsedQuantiy;
+            }
         }
+        console.log("ASK_LIST: ",this.orderBook.asks);
     }
 };
 
