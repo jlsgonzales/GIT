@@ -20,7 +20,8 @@ class BinanceClient
             this.clientHandler.onConnect();
             connection.on('error', (error)=>{this.clientHandler.onError(error);});
             connection.on('close', ()=>{this.clientHandler.onConnectionClosed();});
-            connection.on('message', (msg)=>{ this.clientHandler.onMessage(msg); });    
+            connection.on('message', (msg)=>{ this.clientHandler.onMessage(msg); });
+            this.clientHandler.heartbeat(this.clientSocket);    
         });
     }
     connect()
@@ -29,20 +30,70 @@ class BinanceClient
     }
     getPrice(side, quantity)
     {
-        if(side == 'buy' )
+        this.requestedSide = side;
+        this.reqestedQuantity = quantity; 
+        this.orderBookManager.setUpdateCbk(this);
+    }
+    update()
+    {
+        var listToCompute = [];
+        if ('buy' == this.requestedSide)
         {
-            if (quantity <= this.orderBookManager.orderBook.bidQuantity)
-                {console.log("getBidList", quantity);}
+            if (this.orderBookManager.orderBook.bidQuantity < this.reqestedQuantity)
+            {
+                console.log("Waiting.... Not enough Accumulated BidQuantity in Order Book")
+                return;
+            }
+            listToCompute = this.orderBookManager.orderBook.bids;
         }
-        else if(side == 'sell')
+        else if ('sell' == this.requestedSide)
         {
-            if (quantity <= this.orderBookManager.orderBook.bidQuantity)
-                {console.log("getBidList", quantity);}
+            if (this.orderBookManager.orderBook.askQuantity < this.reqestedQuantity)
+            {
+                console.log("Waiting.... Not enough Accumulated AskQuantity in Order Book")
+                return;
+            }
+            listToCompute = this.orderBookManager.orderBook.asks;
         }
         else
         {
-            console.log("ERROR unsuported side", side)
+            console.error("ERROR invalid side", this.requestedSide)
+            return;
         }
+        var currAve = this.computeWeightedAverage(listToCompute, this.reqestedQuantity);
+        this.logIfNew(currAve);
+    }
+    computeWeightedAverage(dataList, quantity)
+    {
+        var listToCompute = [];
+        var accumulated = 0; 
+        for (var data of dataList)
+        {
+            if (accumulated >= quantity)
+            {
+                break;
+            }
+            listToCompute.push(data); 
+            accumulated += data[1]; //accumulate quantity
+        }
+        var weightedSum = 0;
+        for (var data of listToCompute)
+        {
+            weightedSum += data[0] * data[1];
+        }
+        return weightedSum / accumulated;
+    }
+    logIfNew(ave)
+    {
+        if (this.prevAve == ave)
+        {
+            return;
+        }
+        console.log("==========");
+        console.log("SIDE : ", this.requestedSide);
+        console.log("QUANTITY : ", this.reqestedQuantity);
+        console.log("PRICE WEIGHTED AVERAGE : ", ave);
+        this.prevAve = ave;
     }
 }
 

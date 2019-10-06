@@ -3,4 +3,4 @@ const ConstantsBundle = require('./utils/constants.js');
 
 const client = new BinanceClient(ConstantsBundle.URL_STREAM)
 client.connect() 
-client.getPrice('buy', 10)
+client.getPrice('buy', 100)

@@ -8,11 +8,16 @@ class OrderBookManager
         this.httpsClient = new HttpsClient(ConstantsBundle.URL_SNAPSHOT, this);
         this.filter = new OrderFilter();
         this.orderBook = new OrderBook();
+        this.updateCbkClass = undefined;
     }
     update(msg)
     {
         this.snap = msg; 
         this.filter.updateConfig(this.snap);
+    }
+    setUpdateCbk(updateCbk)
+    {
+        this.updateCbkClass = updateCbk;
     }
     handle(msg)
     {
@@ -23,13 +28,16 @@ class OrderBookManager
             console.log("DROPPED DATA"); 
             return;
         }
-        console.log("=====");
         this.updateLists(payload);
     }
     updateLists(data)
     {
         this.updateBidList(data);
         this.updateAskList(data);
+        if (typeof this.updateCbkClass != 'undefined')
+        {
+            this.updateCbkClass.update()
+        }
     }
     updateBidList(data)
     {
@@ -151,7 +159,6 @@ class OrderBookManagerFilterConfig
     update(snapshot)
     {
         this.lastUpdateId = snapshot.lastUpdateId;
-        console.log("lastUpdateId",this.lastUpdateId)
     }
 };
 

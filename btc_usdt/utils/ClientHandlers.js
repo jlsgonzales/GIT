@@ -1,4 +1,5 @@
- class ClientHandler {
+class ClientHandler 
+{
 constructor(cbk) {this.cbkHandlerClass = cbk}
 onConnectFailed(error) 
 {
@@ -28,6 +29,14 @@ onMessage(msg)
 onData(d) 
 {
     this.onMessage(d);
+}
+
+heartbeat(sockCLient)
+{
+  if (!sockCLient) return;
+  if (sockCLient.readyState !== 1) return;
+  sockCLient.send('pong');
+  setTimeout(heartbeat, 300000); //send every 5 mins
 }
 
 };
