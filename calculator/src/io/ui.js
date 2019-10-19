@@ -11,8 +11,13 @@ class UserInterface {
         });
         this.eventEmitter = new EventEmitter();
         this.rl.on("line", (data)=>{
-            this.eventEmitter.emit("enter", data);
+            this.eventEmitter.emit("enter", data.trim());
         });
+        this.rl.on("close", ()=>{
+            this.rl.pause();
+            process.stdout.write("GOODBYE!");
+            this.rl.resume();
+        })
     }
     out(data) {
         this.rl.pause();
@@ -27,7 +32,8 @@ class UserInterface {
         this.rl.close();
         process.exit();
     }
-    prompt(){
+    prompt(newPrompt){
+        if(newPrompt) {this.rl.setPrompt(newPrompt);}
         this.rl.prompt();
     }
     emitter(){

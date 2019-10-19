@@ -1,26 +1,27 @@
 const UserInterface = require("./ui.js");
 
 class Keypad {
-    constructor(){
-        this.ui = new UserInterface();
-        this.keypressEvent = this.ui.emitter();
+    constructor(_io){
+        this.io = _io;
+        this.keypressEvent = this.io.emitter();
     }
     power(press) {
         if (press == "on"){
-            this.ui.out("HELLO! WELCOME!");
+            this.io.out("HELLO! WELCOME!");
             this.keypressEvent.on("enter", (data)=>{
-                this.ui.out("data");
+                this.keypressEvent.emit("keypress", data);
             });
         }
         else if (press == "off") {
-            this.ui.out("Goodbye!");
-            this.ui.exit()
+            this.io.exit();
         }
         else {
-            this.ui.out("Invalid Keypress");
+            this.io.out("Invalid Keypress");
         }
+    }
+    emitter(){
+        return this.keypressEvent;
     }
 }
 
-var kp = new Keypad();
-kp.power("on");
+module.exports = Keypad;

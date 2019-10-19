@@ -1,11 +1,16 @@
 class Arithmetic {
-    constructor() { }
-    verifyInput(x, y) { return (typeof x === "number"  && typeof y === "number"); }
-    add(x,y) { return this.verifyInput(x, y) ? (x + y) : 0; }
-    subtract(x, y){ return this.verifyInput(x, y) ? (x - y) : 0; } 
-    multiply(x, y){ return this.verifyInput(x, y) ? (x * y) : 0; } 
-    divide(x, y){ return (this.verifyInput(x, y) && y !== 0 ) ? (x / y) : 0; } 
-    modulo(x, y){ return (this.verifyInput(x, y) && y !== 0 ) ? (x % y) : 0; }     
+    constructor() { 
+        this.operations = {
+            "add": (x, y) => { return (x + y); },
+            "subtract": (x, y) => { return (x - y); }, 
+            "multiply": (x, y) => { return (x * y); }, 
+            "divide": (x, y) => { return y !== 0  ? (x / y) : 0; }, 
+            "modulo": (x, y) => { return y !== 0  ? (x % y) : 0; },
+    }}
+
+    solve({operand, firstOperand, secondOperand}){
+        return this.operations[operand](firstOperand,secondOperand);
+    }
 };
 
 module.exports = Arithmetic; 
