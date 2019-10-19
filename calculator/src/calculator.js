@@ -36,5 +36,4 @@ class Calculator {
     }
 };
 
-calc = new Calculator();
-calc.execute()
+module.exports = Calculator
